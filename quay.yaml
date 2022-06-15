@@ -1,0 +1,290 @@
+apiVersion: v1
+data:
+  initdb.sql: Q1JFQVRFIEVYVEVOU0lPTiBJRiBOT1QgRVhJU1RTIHBnX3RyZ20=
+kind: Secret
+metadata:
+  name: postgres-initdb
+  namespace: quay
+type: Opaque
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    QVVUSEVOVElDQVRJT05fVFlQRTogRGF0YWJhc2UKQVZBVEFSX0tJTkQ6IGxvY2FsCkJVSU
+    xETE9HU19SRURJUzoKICAgIGhvc3Q6IHJlZGlzCiAgICBwYXNzd29yZDogc3Ryb25ncGFz
+    c3dvcmQKICAgIHBvcnQ6IDYzNzkKREFUQUJBU0VfU0VDUkVUX0tFWTogNWNlNjY3YjctYj
+    FjYy00MzAzLWEyYzItMDU3OTM3NjBhOTFlCkRCX0NPTk5FQ1RJT05fQVJHUzoge30KREJf
+    VVJJOiBwb3N0Z3Jlc3FsOi8vcXVheXVzZXI6cXVheXBhc3NAcG9zdGdyZXM6NTQzMi9xdW
+    F5CkRFRkFVTFRfVEFHX0VYUElSQVRJT046IDJ3CkRJU1RSSUJVVEVEX1NUT1JBR0VfQ09O
+    RklHOgogICAgZGVmYXVsdDoKICAgICAgICAtIExvY2FsU3RvcmFnZQogICAgICAgIC0gc3
+    RvcmFnZV9wYXRoOiAvZGF0YXN0b3JhZ2UvcmVnaXN0cnkKRElTVFJJQlVURURfU1RPUkFH
+    RV9ERUZBVUxUX0xPQ0FUSU9OUzogW10KRElTVFJJQlVURURfU1RPUkFHRV9QUkVGRVJFTk
+    NFOgogICAgLSBkZWZhdWx0CkZFQVRVUkVfQUNJX0NPTlZFUlNJT046IGZhbHNlCkZFQVRV
+    UkVfQUNUSU9OX0xPR19ST1RBVElPTjogZmFsc2UKRkVBVFVSRV9BTk9OWU1PVVNfQUNDRV
+    NTOiB0cnVlCkZFQVRVUkVfQVBQX1JFR0lTVFJZOiBmYWxzZQpGRUFUVVJFX0FQUF9TUEVD
+    SUZJQ19UT0tFTlM6IHRydWUKRkVBVFVSRV9CSVRCVUNLRVRfQlVJTEQ6IGZhbHNlCkZFQV
+    RVUkVfQkxBQ0tMSVNURURfRU1BSUxTOiBmYWxzZQpGRUFUVVJFX0JVSUxEX1NVUFBPUlQ6
+    IGZhbHNlCkZFQVRVUkVfQ0hBTkdFX1RBR19FWFBJUkFUSU9OOiB0cnVlCkZFQVRVUkVfRE
+    lSRUNUX0xPR0lOOiB0cnVlCkZFQVRVUkVfRVhURU5ERURfUkVQT1NJVE9SWV9OQU1FUzog
+    dHJ1ZQpGRUFUVVJFX0ZJUFM6IGZhbHNlCkZFQVRVUkVfR0lUSFVCX0JVSUxEOiBmYWxzZQ
+    pGRUFUVVJFX0dJVEhVQl9MT0dJTjogZmFsc2UKRkVBVFVSRV9HSVRMQUJfQlVJTEQ6IGZh
+    bHNlCkZFQVRVUkVfR09PR0xFX0xPR0lOOiBmYWxzZQpGRUFUVVJFX0lOVklURV9PTkxZX1
+    VTRVJfQ1JFQVRJT046IGZhbHNlCkZFQVRVUkVfTUFJTElORzogZmFsc2UKRkVBVFVSRV9O
+    T05TVVBFUlVTRVJfVEVBTV9TWU5DSU5HX1NFVFVQOiBmYWxzZQpGRUFUVVJFX1BBUlRJQU
+    xfVVNFUl9BVVRPQ09NUExFVEU6IHRydWUKRkVBVFVSRV9QUk9YWV9TVE9SQUdFOiBmYWxz
+    ZQpGRUFUVVJFX1JFUE9fTUlSUk9SOiBmYWxzZQpGRUFUVVJFX1JFUVVJUkVfVEVBTV9JTl
+    ZJVEU6IHRydWUKRkVBVFVSRV9SRVNUUklDVEVEX1YxX1BVU0g6IHRydWUKRkVBVFVSRV9T
+    RUNVUklUWV9OT1RJRklDQVRJT05TOiBmYWxzZQpGRUFUVVJFX1NFQ1VSSVRZX1NDQU5ORV
+    I6IGZhbHNlCkZFQVRVUkVfU1RPUkFHRV9SRVBMSUNBVElPTjogZmFsc2UKRkVBVFVSRV9U
+    RUFNX1NZTkNJTkc6IGZhbHNlCkZFQVRVUkVfVVNFUl9MQVNUX0FDQ0VTU0VEOiB0cnVlCk
+    ZFQVRVUkVfVVNFUl9MT0dfQUNDRVNTOiBmYWxzZQpGRUFUVVJFX1VTRVJfTUVUQURBVEE6
+    IGZhbHNlCkZFQVRVUkVfVVNFUl9SRU5BTUU6IGZhbHNlCkZFQVRVUkVfVVNFUk5BTUVfQ0
+    9ORklSTUFUSU9OOiB0cnVlCkZSRVNIX0xPR0lOX1RJTUVPVVQ6IDEwbQpHSVRIVUJfTE9H
+    SU5fQ09ORklHOiB7fQpHSVRIVUJfVFJJR0dFUl9DT05GSUc6IHt9CkdJVExBQl9UUklHR0
+    VSX0tJTkQ6IHt9CkxEQVBfQUxMT1dfSU5TRUNVUkVfRkFMTEJBQ0s6IGZhbHNlCkxEQVBf
+    RU1BSUxfQVRUUjogbWFpbApMREFQX1VJRF9BVFRSOiB1aWQKTERBUF9VUkk6IGxkYXA6Ly
+    9sb2NhbGhvc3QKTE9HX0FSQ0hJVkVfTE9DQVRJT046IGRlZmF1bHQKTE9HU19NT0RFTDog
+    ZGF0YWJhc2UKTE9HU19NT0RFTF9DT05GSUc6IHt9Ck1BSUxfREVGQVVMVF9TRU5ERVI6IH
+    N1cHBvcnRAcXVheS5pbwpNQUlMX1BPUlQ6IDU4NwpNQUlMX1VTRV9BVVRIOiBmYWxzZQpN
+    QUlMX1VTRV9UTFM6IGZhbHNlClBSRUZFUlJFRF9VUkxfU0NIRU1FOiBodHRwClJFR0lTVF
+    JZX1RJVExFOiBQcm9qZWN0IFF1YXkKUkVHSVNUUllfVElUTEVfU0hPUlQ6IFByb2plY3Qg
+    UXVheQpSRVBPX01JUlJPUl9JTlRFUlZBTDogMzAKUkVQT19NSVJST1JfVExTX1ZFUklGWT
+    ogdHJ1ZQpTRUFSQ0hfTUFYX1JFU1VMVF9QQUdFX0NPVU5UOiAxMApTRUFSQ0hfUkVTVUxU
+    U19QRVJfUEFHRTogMTAKU0VDUkVUX0tFWTogNWU1Mzc3MjAtNDNmZC00YWIyLTgyMDQtOW
+    Q4YzVkMjU5Y2FmClNFQ1VSSVRZX1NDQU5ORVJfSU5ERVhJTkdfSU5URVJWQUw6IDMwClNF
+    UlZFUl9IT1NUTkFNRTogcXVheS5rOHMub3JnClNFVFVQX0NPTVBMRVRFOiB0cnVlClRBR1
+    9FWFBJUkFUSU9OX09QVElPTlM6CiAgICAtIDBzCiAgICAtIDFkCiAgICAtIDF3CiAgICAt
+    IDJ3CiAgICAtIDR3ClRFQU1fUkVTWU5DX1NUQUxFX1RJTUU6IDMwbQpURVNUSU5HOiBmYW
+    xzZQpVU0VfQ0ROOiBmYWxzZQpVU0VSX0VWRU5UU19SRURJUzoKICAgIGhvc3Q6IHJlZGlz
+    CiAgICBwYXNzd29yZDogc3Ryb25ncGFzc3dvcmQKICAgIHBvcnQ6IDYzNzkKVVNFUl9SRU
+    NPVkVSWV9UT0tFTl9MSUZFVElNRTogMzBtClVTRVJGSUxFU19MT0NBVElPTjogZGVmYXVs
+    dAojIFN1Z2dlc3RlZCBjb25maWd1cmF0aW9uIGZvciBhdXRvbWF0aW9uCkZFQVRVUkVfVV
+    NFUl9JTklUSUFMSVpFOiB0cnVlCkJST1dTRVJfQVBJX0NBTExTX1hIUl9PTkxZOiBmYWxz
+    ZQpTVVBFUl9VU0VSUzoKLSBxdWF5CkZFQVRVUkVfVVNFUl9DUkVBVElPTjogZmFsc2UK
+kind: Secret
+metadata:
+  name: quay-config
+  namespace: quay
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    quay-component: postgres
+  name: postgres
+  namespace: quay
+spec:
+  ports:
+  - port: 5432
+  selector:
+    quay-component: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    quay-component: app
+  name: quay
+  namespace: quay
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: https
+    port: 443
+    targetPort: 8443
+  selector:
+    quay-component: app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    quay-component: redis
+  name: redis
+  namespace: quay
+spec:
+  ports:
+  - port: 6379
+  selector:
+    quay-component: redis
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: quay
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: quay-pvc
+  namespace: quay
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+  volumeMode: Filesystem
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: quay-create-super-user
+  namespace: quay
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      containers:
+      - command:
+        - bash
+        - -c
+        - |
+          until [ "$(curl -s quay -o /dev/null --write-out '%{http_code}')" -eq 200 ]; do
+            sleep 5
+          done
+
+          curl -X POST -k  http://quay/api/v1/user/initialize \
+            --header 'Content-Type: application/json' \
+            --data '{"username": "quay", "password": "Quay12345", "email": "quay@cia.com"}'
+        image: quay.io/bookman117/image:alpine.base
+        imagePullPolicy: IfNotPresent
+        name: quay-create-super-user
+      restartPolicy: Never
+  ttlSecondsAfterFinished: 20
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 1024m
+  name: quay-ingress
+  namespace: quay
+spec:
+  ingressClassName: ig1
+  rules:
+  - host: quay.k8s.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: quay
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    quay-component: postgres
+  name: postgres
+  namespace: quay
+spec:
+  containers:
+  - env:
+    - name: POSTGRES_USER
+      value: quayuser
+    - name: POSTGRES_PASSWORD
+      value: quaypass
+    - name: POSTGRES_DB
+      value: quay
+    image: quay.io/bookman117/postgres:9.6.24-alpine
+    imagePullPolicy: IfNotPresent
+    name: postgres
+    ports:
+    - containerPort: 5432
+    resources:
+      limits:
+        cpu: 1
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+    volumeMounts:
+    - mountPath: /docker-entrypoint-initdb.d
+      name: postgres-initdb
+    - mountPath: /var/lib/postgresql/data
+      name: postgres-storage
+  volumes:
+  - name: postgres-storage
+    persistentVolumeClaim:
+      claimName: postgres-pvc
+  - name: postgres-initdb
+    secret:
+      secretName: postgres-initdb
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    quay-component: app
+  name: quay
+  namespace: quay
+spec:
+  containers:
+  - image: quay.io/bookman117/quay-rhel8:v3.6.6
+    imagePullPolicy: IfNotPresent
+    name: quay
+    ports:
+    - containerPort: 8080
+    - containerPort: 8443
+    resources:
+      limits:
+        cpu: 1
+        memory: 4Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+    volumeMounts:
+    - mountPath: /conf/stack
+      name: quay-config
+      readOnly: false
+    - mountPath: /datastorage
+      name: quay-storage
+  volumes:
+  - name: quay-storage
+    persistentVolumeClaim:
+      claimName: quay-pvc
+  - name: quay-config
+    secret:
+      secretName: quay-config
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    quay-component: redis
+  name: redis
+  namespace: quay
+spec:
+  containers:
+  - env:
+    - name: REDIS_PASSWORD
+      value: strongpassword
+    image: quay.io/bookman117/redis-5:1-169
+    imagePullPolicy: IfNotPresent
+    name: redis
+    ports:
+    - containerPort: 6379
+    resources:
+      limits:
+        cpu: 1
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
