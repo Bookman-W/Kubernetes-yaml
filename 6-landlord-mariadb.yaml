@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_general_ci
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: landlord
+        - name: MYSQL_USER
+          value: landlord
+        - name: MYSQL_PASSWORD
+          value: mymariadblandlord
+        - name: TZ
+          value: Asia/Taipei
+        image: quay.io/bookman117/landlord.mariadb:1.0.0
+        imagePullPolicy: Always
+        name: mariadb
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mariadb
+      restartPolicy: Always
+      volumes:
+      - name: mariadb
+        persistentVolumeClaim:
+          claimName: mariadb
