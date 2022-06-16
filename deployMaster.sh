@@ -169,12 +169,32 @@ delete)
    done
   ;;
 
+images)
+
+  for list in $m_nodes $w_nodes;
+   do
+    ssh $list 'sudo podman images'
+   done
+
+;;
+
+rmi)
+
+  for list in $m_nodes $w_nodes;
+   do
+    ssh $list 'sudo podman rmi -a'
+   done
+
+;;
+
 *)
 
   echo "error: unknown command";echo
   echo "create: Download images & deploy kubernetes."
   echo "package: Download images & deploy basic service pods."
   echo "landlord: Download images & deploy landlord service pods."
+  echo "images: Check cluster images."
+  echo "rmi: Remove all unuse images on cluster."
   echo "delete: Remove all kubernetes file & packages.";echo
 
 ;;
