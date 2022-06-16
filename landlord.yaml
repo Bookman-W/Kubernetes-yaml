@@ -1,0 +1,274 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metallb.universe.tf/address-pool: mlb1
+  name: gateway
+  namespace: landlord
+spec:
+  ports:
+  - port: 20000
+    targetPort: 22
+  selector:
+    app: gateway
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuser
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: kuser
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logger
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: logger
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: mariadb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenant
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: tenant
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kuser
+  namespace: landlord
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb
+  namespace: landlord
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: USERTAG
+          value: tenant
+        image: quay.io/bookman117/landlord.gateway:1.0.0
+        imagePullPolicy: Always
+        name: gateway
+        securityContext:
+          capabilities:
+            add:
+            - AUDIT_WRITE
+            - SYS_CHROOT
+            - CAP_NET_RAW
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuser
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kuser
+  template:
+    metadata:
+      labels:
+        app: kuser
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: KUBECONFIG
+          value: /tmp/kuser/conf/config
+        image: quay.io/bookman117/landlord.kuser:1.0.0
+        imagePullPolicy: Always
+        name: kuser
+        volumeMounts:
+        - mountPath: /app_kuser/kuser
+          name: kuser
+        - mountPath: /tmp/kuser/conf
+          name: kuser-conf
+      restartPolicy: Always
+      volumes:
+      - name: kuser
+        persistentVolumeClaim:
+          claimName: kuser
+      - configMap:
+          name: kuser-conf
+        name: kuser-conf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logger
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logger
+  template:
+    metadata:
+      labels:
+        app: logger
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: DB_SERVER
+          value: mariadb
+        - name: DB_NAME
+          value: landlord
+        - name: DB_ROOT
+          value: landlord
+        - name: DB_ROOT_PW
+          value: mymariadblandlord
+        image: quay.io/bookman117/landlord.logger:1.0.0
+        imagePullPolicy: Always
+        name: logger
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_general_ci
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: landlord
+        - name: MYSQL_USER
+          value: landlord
+        - name: MYSQL_PASSWORD
+          value: mymariadblandlord
+        - name: TZ
+          value: Asia/Taipei
+        image: quay.io/bookman117/landlord.mariadb:1.0.0
+        imagePullPolicy: Always
+        name: mariadb
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mariadb
+      restartPolicy: Always
+      volumes:
+      - name: mariadb
+        persistentVolumeClaim:
+          claimName: mariadb
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tenant
+  namespace: landlord
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tenant
+  serviceName: tenant
+  template:
+    metadata:
+      labels:
+        app: tenant
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: LOG_SERVER
+          value: logger
+        - name: KUSER_SERVER
+          value: kuser
+        - name: EXCLUDE
+          value: .kube\|.bash_history
+        image: quay.io/bookman117/landlord.tenant:1.0.0
+        imagePullPolicy: Always
+        name: tenant
+        securityContext:
+          capabilities:
+            add:
+            - AUDIT_WRITE
+            - SYS_CHROOT
+            - CAP_NET_RAW
+        volumeMounts:
+        - mountPath: /home/wk
+          name: wk
+      restartPolicy: Always
+  volumeClaimTemplates:
+  - metadata:
+      name: wk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: local-path
