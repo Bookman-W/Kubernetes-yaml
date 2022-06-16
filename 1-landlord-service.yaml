@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metallb.universe.tf/address-pool: mlb1
+  name: gateway
+  namespace: landlord
+spec:
+  ports:
+  - port: 20000
+    targetPort: 22
+  selector:
+    app: gateway
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuser
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: kuser
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logger
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: logger
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: mariadb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenant
+  namespace: landlord
+spec:
+  clusterIP: None
+  selector:
+    app: tenant
