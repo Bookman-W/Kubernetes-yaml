@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tenant
+  namespace: landlord
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tenant
+  serviceName: tenant
+  template:
+    metadata:
+      labels:
+        app: tenant
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: LOG_SERVER
+          value: logger
+        - name: KUSER_SERVER
+          value: kuser
+        - name: EXCLUDE
+          value: .kube\|.bash_history
+        image: quay.io/bookman117/landlord.tenant:1.0.0
+        imagePullPolicy: Always
+        name: tenant
+        securityContext:
+          capabilities:
+            add:
+            - AUDIT_WRITE
+            - SYS_CHROOT
+            - CAP_NET_RAW
+        volumeMounts:
+        - mountPath: /home/wk
+          name: wk
+      restartPolicy: Always
+  volumeClaimTemplates:
+  - metadata:
+      name: wk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: local-path
