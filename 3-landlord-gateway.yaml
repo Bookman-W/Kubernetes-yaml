@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: USERTAG
+          value: tenant
+        image: quay.io/bookman117/landlord.gateway:1.0.0
+        imagePullPolicy: Always
+        name: gateway
+        securityContext:
+          capabilities:
+            add:
+            - AUDIT_WRITE
+            - SYS_CHROOT
+            - CAP_NET_RAW
+      restartPolicy: Always
