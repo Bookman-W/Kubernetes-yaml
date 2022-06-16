@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logger
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logger
+  template:
+    metadata:
+      labels:
+        app: logger
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: DB_SERVER
+          value: mariadb
+        - name: DB_NAME
+          value: landlord
+        - name: DB_ROOT
+          value: landlord
+        - name: DB_ROOT_PW
+          value: mymariadblandlord
+        image: quay.io/bookman117/landlord.logger:1.0.0
+        imagePullPolicy: Always
+        name: logger
+      restartPolicy: Always
