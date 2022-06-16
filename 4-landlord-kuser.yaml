@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuser
+  namespace: landlord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kuser
+  template:
+    metadata:
+      labels:
+        app: kuser
+    spec:
+      containers:
+      - env:
+        - name: NS
+          value: landlord
+        - name: KUBECONFIG
+          value: /tmp/kuser/conf/config
+        image: quay.io/bookman117/landlord.kuser:1.0.0
+        imagePullPolicy: Always
+        name: kuser
+        volumeMounts:
+        - mountPath: /app_kuser/kuser
+          name: kuser
+        - mountPath: /tmp/kuser/conf
+          name: kuser-conf
+      restartPolicy: Always
+      volumes:
+      - name: kuser
+        persistentVolumeClaim:
+          claimName: kuser
+      - configMap:
+          name: kuser-conf
+        name: kuser-conf
