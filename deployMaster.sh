@@ -2,7 +2,7 @@
 #Program:
 #Deployment kubernetes
 #Date:
-#2022-06-16
+#2022-06-10
 
 #Variable
 m_nodes="m1"
@@ -12,6 +12,7 @@ namespace1="local-path-storage"
 namespace2="metallb-system"
 namespace3="ingress-nginx"
 namespace4="quay"
+namespace5="landlord"
 
 #Program
 case $1 in
@@ -32,7 +33,7 @@ create)
   for list in $m_nodes $w_nodes;
    do
     ssh $list 'sudo rc-update add kubelet default'
-    cat /etc/hosts | grep "192.168.61.220"
+    cat /etc/hosts | grep "192.168.61.220 quay.k8s.org"
     [ $? == 0 ] || ssh $list 'echo "192.168.61.220 quay.k8s.org" | sudo tee -a /etc/hosts'
    done
 
@@ -93,29 +94,48 @@ package)
     continue
    done
   echo "ingress-nginx deploy is done!";echo
-
-
+  
   #quay
-  kubectl create ns quay
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
+  #kubectl create ns quay
+  #kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
+  #while true
+  # do 
+  #  kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
+  #  [ $? != 0 ] && break || clear
+  #  echo -n "Project Quay deploying"
+  #  echo -n ".";sleep 0.5
+  #  echo -n ".";sleep 0.5
+  #  echo -n ".";sleep 0.5
+  #  clear
+  #  continue
+  # done
+  #echo "Project Quay deploy is done!";echo
+  ;;
+
+landlord)
+  
+  #landlord
+  kubectl create ns landlord;sleep 1
+  kubectl create -n landlord configmap kuser-conf --from-file /home/bigred/.kube/config;sleep 1
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/landlord.yaml;sleep 1
   while true
    do 
-    kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
+    kubectl get pods -n $namespace5 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
     [ $? != 0 ] && break || clear
-    echo -n "Project Quay deploying"
+    echo -n "landlord deploying"
     echo -n ".";sleep 0.5
     echo -n ".";sleep 0.5
     echo -n ".";sleep 0.5
     clear
     continue
    done
-  echo "Project Quay deploy is done!";echo
+  echo "landlord is done!";echo
   ;;
 
 delete)
 
   #quay
-  kubectl delete -f http://web.flymks.com/cicd/v1/quay.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
   
   #ingress-nginx
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/ingress-deploy.yaml
@@ -153,7 +173,8 @@ delete)
 
   echo "error: unknown command";echo
   echo "create: Download images & deploy kubernetes."
-  echo "package: Download images & deploy service pods."
+  echo "package: Download images & deploy basic service pods."
+  echo "landlord: Download images & deploy landlord service pods."
   echo "delete: Remove all kubernetes file & packages.";echo
 
 ;;
