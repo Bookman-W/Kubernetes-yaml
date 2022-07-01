@@ -40,7 +40,7 @@ create)
   
   sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP
   mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/kube-flannel.yml
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
   export JOIN=$(echo "sudo `kubeadm token create --print-join-command 2>/dev/null`")
   ssh w1 "$JOIN"; ssh w2 "$JOIN"
   kubectl label node w1 node-role.kubernetes.io/worker=; kubectl label node w2 node-role.kubernetes.io/worker=
