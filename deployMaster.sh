@@ -23,14 +23,14 @@ createMaster)
    do
     ssh $mlist 'sudo apk update'
     ssh $mlist 'sudo apk add kubeadm kubelet kubectl --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
-    ssh $mlist 'sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP'
+    ssh $mlist "sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP"
     ssh $mlist 'sudo rc-update add kubelet default'
-    ssh $mlist 'mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config'
+    ssh $mlist "mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config"
     ssh $mlist 'kubectl taint node m1 node-role.kubernetes.io/control-plane:NoSchedule-'
     ssh $mlist 'kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/kube-flannel.yml'
-    echo -n "Prepare to reboot master node in"
-    sleep 1;echo -n " 5 ";sleep 1;echo -n " 4 ";sleep 1;echo -n " 3 ";sleep 1;echo -n " 2 ";sleep 1;echo " 1 "
-    echo "Master node rebooting...";sleep 3
+    echo -n "Prepare to reboot master node in "
+    sleep 1;echo -n "5 ";sleep 1;echo -n "4 ";sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
+    sleep 1;echo "Master node rebooting...";sleep 3
     ssh $mlist 'sudo reboot'
    done
   ;;
@@ -44,9 +44,9 @@ createWorker)
     ssh $wlist 'sudo apk add  kubeadm kubelet --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
     ssh $wlist 'sudo rc-update add kubelet default'
     ssh $wlist "$JOIN"
-    echo -n "Prepare to reboot master node in"
-    sleep 1;echo -n " 3 ";sleep 1;echo -n " 2 ";sleep 1;echo " 1 "
-    echo "Worker node rebooting...";sleep 3
+    echo -n "Prepare to reboot master node in "
+    sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
+    sleep 1;echo "Worker node rebooting...";sleep 3
     ssh $wlist 'sudo reboot'
    done
 
