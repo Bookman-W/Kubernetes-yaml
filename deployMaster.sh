@@ -30,7 +30,7 @@ createMaster)
     ssh $mlist 'kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/kube-flannel.yml'
     echo -n "Prepare to reboot master node in "
     sleep 1;echo -n "5 ";sleep 1;echo -n "4 ";sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
-    sleep 1;echo "Master node rebooting...";sleep 3
+    sleep 1;echo "Master node $mlist rebooting...";sleep 3
     ssh $mlist 'sudo reboot'
    done
   ;;
@@ -46,7 +46,7 @@ createWorker)
     ssh $wlist "$JOIN"
     echo -n "Prepare to reboot master node in "
     sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
-    sleep 1;echo "Worker node rebooting...";sleep 3
+    sleep 1;echo "Worker node $wlist rebooting...";sleep 3
     ssh $wlist 'sudo reboot'
    done
 
@@ -314,7 +314,7 @@ rmi)
 
 *)
 
-  echo "Please input parameter.";echo
+  echo;echo "Please input parameter.";echo
   echo "createMaster: Deploy kubernetes master node."
   echo "createWorker: Deploy kubernetes worker node."
   echo "package: Download images & deploy basic service pods."
