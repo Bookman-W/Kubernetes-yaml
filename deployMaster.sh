@@ -17,34 +17,46 @@ namespace6="gf"
 
 #Program
 case $1 in
-create)
+createMaster)
 
-  for list in $m_nodes;
+  for mlist in $m_nodes;
    do
-    ssh $list 'sudo apk update'
-    ssh $list 'sudo apk add kubeadm kubelet kubectl --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
+    ssh $mlist 'sudo apk update'
+    ssh $mlist 'sudo apk add kubeadm kubelet kubectl --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
+    ssh $mlist 'sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP'
+    ssh $mlist 'sudo rc-update add kubelet default'
+    ssh $mlist 'mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config'
+    ssh $mlist 'kubectl taint node m1 node-role.kubernetes.io/control-plane:NoSchedule-'
+    ssh $mlist 'kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/kube-flannel.yml'
+    echo -n "Prepare to reboot master node in"
+    sleep 1;echo -n " 5 ";sleep 1;echo -n " 4 ";sleep 1;echo -n " 3 ";sleep 1;echo -n " 2 ";sleep 1;echo " 1 "
+    echo "Master node rebooting...";sleep 3
+    ssh $mlist 'sudo reboot'
    done
+  ;;
 
-  for list in $w_nodes;
-   do
-    ssh $list 'sudo apk update'
-    ssh $list 'sudo apk add kubeadm kubelet --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
-   done
+createWorker)
 
-  for list in $m_nodes $w_nodes;
-   do
-    ssh $list 'sudo rc-update add kubelet default'
-    cat /etc/hosts | grep "192.168.61.220 quay.k8s.org"
-    [ $? == 0 ] || ssh $list 'echo "192.168.61.220 quay.k8s.org" | sudo tee -a /etc/hosts'
-   done
-  
-  sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP
-  mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
   export JOIN=$(echo "sudo `kubeadm token create --print-join-command 2>/dev/null`")
-  ssh w1 "$JOIN"; ssh w2 "$JOIN"
-  kubectl label node w1 node-role.kubernetes.io/worker=; kubectl label node w2 node-role.kubernetes.io/worker=
-  watch kubectl get pods -o wide -A
+  for wlist in $w_nodes;
+   do
+    ssh $wlist 'sudo apk update'
+    ssh $wlist 'sudo apk add  kubeadm kubelet --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
+    ssh $wlist 'sudo rc-update add kubelet default'
+    ssh $wlist "$JOIN"
+    echo -n "Prepare to reboot master node in"
+    sleep 1;echo -n " 3 ";sleep 1;echo -n " 2 ";sleep 1;echo " 1 "
+    echo "Worker node rebooting...";sleep 3
+    ssh $wlist 'sudo reboot'
+   done
+
+  for mwlist in $m_nodes;
+   do
+    cat /etc/hosts | grep "192.168.153.220 quay.k8s.org"
+    [ $? == 0 ] || ssh $mwlist 'echo "192.168.153.220 quay.k8s.org" | sudo tee -a /etc/hosts'
+    kubectl label node w1 node-role.kubernetes.io/worker=; kubectl label node w2 node-role.kubernetes.io/worker=
+    watch kubectl get pods -o wide -A
+   done
   ;;
 
 package)
@@ -97,20 +109,20 @@ package)
   echo "ingress-nginx deploy is done!";echo
   
   #quay
-  #kubectl create ns quay
-  #kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
-  #while true
-  # do 
-  #  kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
-  #  [ $? != 0 ] && break || clear
-  #  echo -n "Project Quay deploying"
-  #  echo -n ".";sleep 0.5
-  #  echo -n ".";sleep 0.5
-  #  echo -n ".";sleep 0.5
-  #  clear
-  #  continue
-  # done
-  #echo "Project Quay deploy is done!";echo
+  kubectl create ns quay
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
+  while true
+   do 
+    kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
+    [ $? != 0 ] && break || clear
+    echo -n "Project Quay deploying"
+    echo -n ".";sleep 0.5
+    echo -n ".";sleep 0.5
+    echo -n ".";sleep 0.5
+    clear
+    continue
+   done
+  echo "Project Quay deploy is done!";echo
   ;;
 
 landlord)
@@ -302,8 +314,9 @@ rmi)
 
 *)
 
-  echo "error: unknown command";echo
-  echo "create: Download images & deploy kubernetes."
+  echo "Please input parameter.";echo
+  echo "createMaster: Deploy kubernetes master node."
+  echo "createWorker: Deploy kubernetes worker node."
   echo "package: Download images & deploy basic service pods."
   echo "landlord: Download images & deploy landlord service pods."
   echo "images: Check cluster images."
