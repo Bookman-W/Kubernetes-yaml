@@ -33,7 +33,8 @@ createMaster)
     sleep 1;echo "Master node $mlist rebooting...";sleep 3
     ssh $mlist 'sudo reboot'
    done
-  ;;
+
+;;
 
 createWorker)
 
@@ -44,20 +45,22 @@ createWorker)
     ssh $wlist 'sudo apk add  kubeadm kubelet --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
     ssh $wlist 'sudo rc-update add kubelet default'
     ssh $wlist "$JOIN"
+    kubectl label node $wlist node-role.kubernetes.io/worker=
     clear;echo -n "Prepare to reboot worker node in "
     sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
     sleep 1;echo "Worker node $wlist rebooting...";sleep 3
     ssh $wlist 'sudo reboot'
    done
 
-  for mwlist in $m_nodes;
+  for mwlist in $m_nodes $w_nodes;
    do
-    cat /etc/hosts | grep "192.168.153.220 quay.k8s.org"
+    ssh $mwlist 'cat /etc/hosts | grep "192.168.153.220 quay.k8s.org"'
     [ $? == 0 ] || ssh $mwlist 'echo "192.168.153.220 quay.k8s.org" | sudo tee -a /etc/hosts'
-    kubectl label node w1 node-role.kubernetes.io/worker=; kubectl label node w2 node-role.kubernetes.io/worker=
-    watch kubectl get pods -o wide -A
    done
-  ;;
+
+   watch kubectl get pods -o wide -A
+
+;;
 
 package)
 
@@ -251,7 +254,8 @@ landlord)
     continue
    done
   echo "grafana tenant is done!";echo
-  ;;
+
+;;
 
 unpackage)
 
@@ -265,7 +269,8 @@ unpackage)
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-namespace.yaml
   #local-path-storage
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/local-path-storage.yaml
-  ;;
+
+;;
 
 unlandlord)
   
@@ -288,46 +293,62 @@ unlandlord)
   #configmap & namespace
   kubectl delete -n landlord configmap kuser-conf --from-file /home/bigred/.kube/config
   kubectl delete ns landlord
-  ;;
+
+;;
 
 delete)
 
-  for list in $m_nodes $w_nodes;
+  for mwlist in $m_nodes $w_nodes;
    do
     echo -e "y\n" | ssh $list 'sudo kubeadm reset'
-    ssh $list 'sudo rc-update del kubelet default'
-    ssh $list 'sudo rm -r /etc/kubernetes'
-    ssh $list 'sudo podman rmi -a'
+    ssh $mwlist 'sudo rc-update del kubelet default'
+    ssh $mwlist 'sudo rm -r /etc/kubernetes'
+    ssh $mwlist 'sudo podman rmi -a'
    done
 
-  for list in $m_nodes;
+  for mlist in $m_nodes;
    do
     sudo apk del kubeadm kubelet kubectl
     rm -r .kube
     sudo rm -r /etc/kubernetes
    done
 
-  for list in $w_nodes;
+  for wlist in $w_nodes;
    do
-    ssh $list 'sudo apk del kubeadm kubelet'
+    ssh $wlist 'sudo apk del kubeadm kubelet'
    done
-  ;;
+
+;;
 
 images)
 
-  for list in $m_nodes $w_nodes;
+  for mwlist in $m_nodes $w_nodes;
    do
-    echo "$list images list";echo
-    ssh $list 'sudo podman images';echo
+    echo "$mwlist images list";echo
+    ssh $mwlist 'sudo podman images';echo
    done
 
 ;;
 
 rmi)
 
-  for list in $m_nodes $w_nodes;
+  for mwlist in $m_nodes $w_nodes;
    do
-    ssh $list 'sudo podman rmi -a'
+    ssh $mwlist 'sudo podman rmi -a'
+   done
+
+;;
+
+send)
+
+  sudo podman pull $2
+  sudo podman save $2 > $3
+  for wlist in $w_nodes;
+   do
+    scp $3 $wlist:~
+    ssh $wlist "sudo podman rmi $2"
+    ssh $wlist "sudo podman load < $3"
+    ssh $wlist "rm ~/$3"
    done
 
 ;;
@@ -341,9 +362,11 @@ rmi)
   echo "landlord: Download images & deploy landlord service pods."
   echo "unpackage: Delete basic service pods"
   echo "unlandlord: Delete landlord service pods"
+  echo "delete: Remove all kubernetes file & packages."
   echo "images: Check cluster images."
   echo "rmi: Remove all unuse images on cluster."
-  echo "delete: Remove all kubernetes file & packages.";echo
-  ;;
+  echo "send: save >> scp >> load target image to worker node [ send <image name> <tar name> ]";echo
+
+;;
 
 esac
