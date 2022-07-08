@@ -5,9 +5,9 @@
 #2022-06-10
 
 #Variable
+export IP=`hostname -i`
 m_nodes="m1"
 w_nodes="w1 w2"
-export IP=`hostname -i`
 namespace1="local-path-storage"
 namespace2="metallb-system"
 namespace3="ingress-nginx"
@@ -23,12 +23,12 @@ createMaster)
    do
     ssh $mlist 'sudo apk update'
     ssh $mlist 'sudo apk add kubeadm kubelet kubectl --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
-    ssh $mlist "sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP"
     ssh $mlist 'sudo rc-update add kubelet default'
+    ssh $mlist "sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP"
     ssh $mlist "mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config"
     ssh $mlist 'kubectl taint node m1 node-role.kubernetes.io/control-plane:NoSchedule-'
     ssh $mlist 'kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/kube-flannel.yml'
-    echo -n "Prepare to reboot master node in "
+    clear;echo -n "Prepare to reboot master node in "
     sleep 1;echo -n "5 ";sleep 1;echo -n "4 ";sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
     sleep 1;echo "Master node $mlist rebooting...";sleep 3
     ssh $mlist 'sudo reboot'
@@ -44,7 +44,7 @@ createWorker)
     ssh $wlist 'sudo apk add  kubeadm kubelet --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted'
     ssh $wlist 'sudo rc-update add kubelet default'
     ssh $wlist "$JOIN"
-    echo -n "Prepare to reboot master node in "
+    clear;echo -n "Prepare to reboot worker node in "
     sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
     sleep 1;echo "Worker node $wlist rebooting...";sleep 3
     ssh $wlist 'sudo reboot'
@@ -251,24 +251,43 @@ landlord)
     continue
    done
   echo "grafana tenant is done!";echo
-
   ;;
 
 unpackage)
 
   #quay
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
-  
   #ingress-nginx
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/ingress-deploy.yaml
-  
   #metallb-system
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-ConfigMap.yaml
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb.yaml
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-namespace.yaml
-  
   #local-path-storage
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/local-path-storage.yaml
+  ;;
+
+unlandlord)
+  
+  #grafana
+  kubectl delete -f https://web.flymks.com/grafana/v1/grafana.yaml
+  #tenant
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/7-landlord-tenant.yaml
+  #mariadb
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/6-landlord-mariadb.yaml
+  #logger
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/5-landlord-logger.yaml
+  #kuser
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/4-landlord-kuser.yaml
+  #gateway
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/3-landlord-gateway.yaml
+  #PVC
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/2-landlord-PVC.yaml
+  #service
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/1-landlord-service.yaml
+  #configmap & namespace
+  kubectl delete -n landlord configmap kuser-conf --from-file /home/bigred/.kube/config
+  kubectl delete ns landlord
   ;;
 
 delete)
@@ -298,7 +317,8 @@ images)
 
   for list in $m_nodes $w_nodes;
    do
-    ssh $list 'sudo podman images'
+    echo "$list images list";echo
+    ssh $list 'sudo podman images';echo
    done
 
 ;;
@@ -319,10 +339,11 @@ rmi)
   echo "createWorker: Deploy kubernetes worker node."
   echo "package: Download images & deploy basic service pods."
   echo "landlord: Download images & deploy landlord service pods."
+  echo "unpackage: Delete basic service pods"
+  echo "unlandlord: Delete landlord service pods"
   echo "images: Check cluster images."
   echo "rmi: Remove all unuse images on cluster."
   echo "delete: Remove all kubernetes file & packages.";echo
-
-;;
+  ;;
 
 esac
