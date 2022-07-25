@@ -27,7 +27,7 @@ createMaster)
     ssh $mlist "sudo kubeadm init --service-cidr 10.98.0.0/24 --pod-network-cidr 10.244.0.0/16 --service-dns-domain=k8s.org --apiserver-advertise-address $IP"
     ssh $mlist "mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config"
     ssh $mlist 'kubectl taint node m1 node-role.kubernetes.io/control-plane:NoSchedule-'
-    ssh $mlist 'kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/kube-flannel.yml'
+    ssh $mlist 'kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/kube-flannel.yml'
     clear;echo -n "Prepare to reboot master node in "
     sleep 1;echo -n "5 ";sleep 1;echo -n "4 ";sleep 1;echo -n "3 ";sleep 1;echo -n "2 ";sleep 1;echo "1 "
     sleep 1;echo "Master node $mlist rebooting...";sleep 3
@@ -65,7 +65,7 @@ createWorker)
 package)
 
   #local-path-storage
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/local-path-storage.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/local-path-storage.yaml
   while true
    do 
     kubectl get pods -n $namespace1 | tail -n +2 | cut -b 51-57 | grep -v 'Running' &> /dev/null
@@ -80,9 +80,9 @@ package)
   echo "local-path-storage deploy is done!";echo
 
   #metallb-system
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-namespace.yaml
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb.yaml
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-ConfigMap.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml
   while true
    do  
     kubectl get pods -n $namespace2 | tail -n +2 | cut -b 39-45 | grep -v 'Running' &> /dev/null
@@ -97,7 +97,7 @@ package)
   echo "metallb deploy is done!";echo
 
   #ingress-nginx
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/ingress-deploy.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/ingress-deploy.yaml
   while true
    do 
     kubectl get pods -n $namespace3 | tail -n +2 | cut -b 53-61 | grep -vE 'Running|Completed' &> /dev/null
@@ -112,20 +112,20 @@ package)
   echo "ingress-nginx deploy is done!";echo
   
   #quay
-  kubectl create ns quay
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
-  while true
-   do 
-    kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
-    [ $? != 0 ] && break || clear
-    echo -n "Project Quay deploying"
-    echo -n ".";sleep 0.5
-    echo -n ".";sleep 0.5
-    echo -n ".";sleep 0.5
-    clear
-    continue
-   done
-  echo "Project Quay deploy is done!";echo
+  #kubectl create ns quay
+  #kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
+  #while true
+  # do 
+  #  kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
+  #  [ $? != 0 ] && break || clear
+  #  echo -n "Project Quay deploying"
+  #  echo -n ".";sleep 0.5
+  #  echo -n ".";sleep 0.5
+  #  echo -n ".";sleep 0.5
+  #  clear
+  #  continue
+  # done
+  #echo "Project Quay deploy is done!";echo
   ;;
 
 landlord)
@@ -135,7 +135,7 @@ landlord)
   kubectl create -n landlord configmap kuser-conf --from-file /home/bigred/.kube/config
   
   #service
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/1-landlord-service.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/1-landlord-service.yaml
   while true
    do 
     kubectl get svc -n $namespace5 | tail -n +2 | cut -b 11-22 | grep -vE 'LoadBalancer|ClusterIP' &> /dev/null
@@ -150,7 +150,7 @@ landlord)
   echo "landlord service is done!";echo
   
   #PVC
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/2-landlord-PVC.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/2-landlord-PVC.yaml
   while true
    do 
     kubectl get pvc -n $namespace5 | tail -n +2 | cut -b 11-17 | grep -v 'Pending' &> /dev/null
@@ -165,7 +165,7 @@ landlord)
   echo "landlord PVC is done!";echo
   
   #gateway
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/3-landlord-gateway.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/3-landlord-gateway.yaml
   while true
    do 
     kubectl get pod -n $namespace5 | tail -n +2 | cut -b 36-42 | grep -v 'Running' &> /dev/null
@@ -180,7 +180,7 @@ landlord)
   echo "landlord gateway is done!";echo
 
   #kuser
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/4-landlord-kuser.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/4-landlord-kuser.yaml
   while true
    do 
     kubectl get pod -n $namespace5 | tail -n +2 | cut -b 36-42 | grep -v 'Running' &> /dev/null
@@ -195,7 +195,7 @@ landlord)
   echo "landlord kuser is done!";echo
 
   #logger
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/5-landlord-logger.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/5-landlord-logger.yaml
   while true
    do 
     kubectl get pod -n $namespace5 | tail -n +2 | cut -b 36-42 | grep -v 'Running' &> /dev/null
@@ -210,7 +210,7 @@ landlord)
   echo "landlord logger is done!";echo
 
   #mariadb
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/6-landlord-mariadb.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/6-landlord-mariadb.yaml
   while true
    do 
     kubectl get pod -n $namespace5 | tail -n +2 | cut -b 36-42 | grep -v 'Running' &> /dev/null
@@ -225,7 +225,7 @@ landlord)
   echo "landlord mariadb is done!";echo
 
   #tenant
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/7-landlord-tenant.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/7-landlord-tenant.yaml
   while true
    do 
     kubectl get pod -n $namespace5 | tail -n +2 | cut -b 36-42 | grep -v 'Running' &> /dev/null
@@ -260,15 +260,15 @@ landlord)
 unpackage)
 
   #quay
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/quay.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
   #ingress-nginx
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/ingress-deploy.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/ingress-deploy.yaml
   #metallb-system
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-ConfigMap.yaml
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb.yaml
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/metallb-namespace.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
   #local-path-storage
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/local-path-storage.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/local-path-storage.yaml
 
 ;;
 
@@ -277,19 +277,19 @@ unlandlord)
   #grafana
   kubectl delete -f https://web.flymks.com/grafana/v1/grafana.yaml
   #tenant
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/7-landlord-tenant.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/7-landlord-tenant.yaml
   #mariadb
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/6-landlord-mariadb.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/6-landlord-mariadb.yaml
   #logger
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/5-landlord-logger.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/5-landlord-logger.yaml
   #kuser
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/4-landlord-kuser.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/4-landlord-kuser.yaml
   #gateway
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/3-landlord-gateway.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/3-landlord-gateway.yaml
   #PVC
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/2-landlord-PVC.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/2-landlord-PVC.yaml
   #service
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-yaml-file/main/1-landlord-service.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/1-landlord-service.yaml
   #configmap & namespace
   kubectl delete -n landlord configmap kuser-conf --from-file /home/bigred/.kube/config
   kubectl delete ns landlord
@@ -340,8 +340,9 @@ rmi)
 ;;
 
 send)
-
-  sudo podman pull $2
+  
+  sudo podman images | grep "$2"
+  [ $? != 0 ] && sudo podman pull $2
   sudo podman save $2 > $3
   for wlist in $w_nodes;
    do
@@ -350,6 +351,7 @@ send)
     ssh $wlist "sudo podman load < $3"
     ssh $wlist "rm ~/$3"
    done
+  rm ./$3
 
 ;;
 
@@ -365,7 +367,7 @@ send)
   echo "delete: Remove all kubernetes file & packages."
   echo "images: Check cluster images."
   echo "rmi: Remove all unuse images on cluster."
-  echo "send: save >> scp >> load target image to worker node [ send <image name> <tar name> ]";echo
+  echo "send: save >> scp >> load target image to worker node [ send <image name> <name.tar> ]";echo
 
 ;;
 
