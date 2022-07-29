@@ -86,6 +86,8 @@ package)
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
   curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl apply -f -
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/${1}/g" | sed "s/END/${2}/g"
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/111/g" | sed "s/END/222/g"
   while true
    do  
     kubectl get pods -n $namespace2 | tail -n +2 | cut -b 39-45 | grep -v 'Running' &> /dev/null
@@ -296,7 +298,6 @@ unjenkins)
 
 unquay)
 
-  #quay
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
   kubectl delete ns quay
 
@@ -390,7 +391,7 @@ send)
   echo;echo "Please input parameter.";echo
   echo "createMaster: Deploy kubernetes master node."
   echo "createWorker: Deploy kubernetes worker node."
-  echo "package: Download images & deploy basic service pods."
+  echo "package: Download images & deploy basic service pods.[ Automatic select networkID, <package> <Start-IP> <End-IP> ]"
   echo "jenkins: Download images & deploy jenkins service."
   echo "quay: Download images & deploy quay service."
   echo "landlord: Download images & deploy landlord service pods."; echo
