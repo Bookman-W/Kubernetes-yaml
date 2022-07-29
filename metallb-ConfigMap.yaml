@@ -9,4 +9,4 @@ data:
     - name: mlb1
       protocol: layer2
       addresses:
-      - NETID.220-NETID.230
+      - NETID.START-NETID.END
