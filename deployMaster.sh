@@ -56,8 +56,8 @@ createWorker)
 
   for mwlist in $m_nodes $w_nodes;
    do
-    ssh $mwlist 'cat /etc/hosts | grep "192.168.153.220 quay.k8s.org"'
-    [ $? == 0 ] || ssh $mwlist 'echo "192.168.153.220 quay.k8s.org" | sudo tee -a /etc/hosts'
+    ssh $mwlist 'cat /etc/hosts | grep "192.168.153.220 quay.k8s.org jenkins.k8s.org"'
+    [ $? == 0 ] || ssh $mwlist 'echo "192.168.153.220 quay.k8s.org jenkins.k8s.org" | sudo tee -a /etc/hosts'
    done
 
    watch kubectl get pods -o wide -A
@@ -84,7 +84,7 @@ package)
 
   #metallb-system
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
   curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl apply -f -
   while true
    do  
@@ -262,7 +262,7 @@ landlord)
    do 
     kubectl get pod -n $namespace6 | tail -n +2 | cut -b 36-42 | grep -v 'Running' &> /dev/null
     [ $? != 0 ] && break || clear
-    echo -n "grafana tenant deploying"
+    echo -n "grafana deploying"
     echo -n ".";sleep 0.5
     echo -n ".";sleep 0.5
     echo -n ".";sleep 0.5
@@ -395,10 +395,10 @@ send)
   echo "quay: Download images & deploy quay service."
   echo "landlord: Download images & deploy landlord service pods."; echo
 
-  echo "unpackage: Delete basic service pods"
+  echo "unpackage: Delete basic service."
   echo "unjenkins: Delete jenkins service."
   echo "unquay: Delete quay service."
-  echo "unlandlord: Delete landlord service pods"; echo
+  echo "unlandlord: Delete landlord service."; echo
 
   echo "delete: Remove all kubernetes file & packages."
   echo "images: Check cluster images."
