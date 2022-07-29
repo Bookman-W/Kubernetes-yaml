@@ -65,6 +65,8 @@ createWorker)
 package)
 
   #local-path-storage
+  wget -O - https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.22/deploy/local-path-storage.yaml
+
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/local-path-storage.yaml
   while true
    do 
@@ -119,7 +121,7 @@ package)
   #  kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
   #  [ $? != 0 ] && break || clear
   #  echo -n "Project Quay deploying"
-  #  echo -n ".";sleep 0.5
+  # echo -n ".";sleep 0.5
   #  echo -n ".";sleep 0.5
   #  echo -n ".";sleep 0.5
   #  clear
@@ -257,6 +259,12 @@ landlord)
 
 ;;
 
+jenkins)
+
+  kubectl apply -f http://web.flymks.com/cicd/v1/jenkins.yaml
+
+;;
+
 unpackage)
 
   #quay
@@ -362,6 +370,7 @@ send)
   echo "createWorker: Deploy kubernetes worker node."
   echo "package: Download images & deploy basic service pods."
   echo "landlord: Download images & deploy landlord service pods."
+  echo "jenkins: Download images & deploy jenkins service."
   echo "unpackage: Delete basic service pods"
   echo "unlandlord: Delete landlord service pods"
   echo "delete: Remove all kubernetes file & packages."
