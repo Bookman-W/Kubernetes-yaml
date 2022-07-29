@@ -85,7 +85,7 @@ package)
   #metallb-system
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
-  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/${1}/g" | sed "s/END/${2}/g" | kubectl apply -f -
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/${2}/g" | sed "s/END/${3}/g" | kubectl apply -f -
   while true
    do  
     kubectl get pods -n $namespace2 | tail -n +2 | cut -b 39-45 | grep -v 'Running' &> /dev/null
@@ -278,7 +278,7 @@ unpackage)
   #ingress-nginx
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/ingress-deploy.yaml
   #metallb-system
-  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl delete -f -
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/${2}/g" | sed "s/END/${3}/g" | kubectl delete -f -
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
   #local-path-storage
@@ -389,7 +389,7 @@ send)
   echo;echo "Please input parameter.";echo
   echo "createMaster: Deploy kubernetes master node."
   echo "createWorker: Deploy kubernetes worker node."
-  echo "package: Download images & deploy basic service pods.[ Automatic select networkID, <package> <Start-IP> <End-IP> ]"
+  echo "package: Download images & deploy basic service pods. [ Automatic select networkID, <package> <Start-IP> <End-IP> ]"
   echo "jenkins: Download images & deploy jenkins service."
   echo "quay: Download images & deploy quay service."
   echo "landlord: Download images & deploy landlord service pods."; echo
