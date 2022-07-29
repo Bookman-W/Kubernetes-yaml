@@ -6,6 +6,7 @@
 
 #Variable
 export IP=`hostname -i`
+export NETID=`hostname -i | cut -d "." -f 1-3`
 m_nodes="m1"
 w_nodes="w1 w2"
 namespace1="local-path-storage"
@@ -83,7 +84,7 @@ package)
 
   #metallb-system
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl apply -f -
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml
   while true
    do  
@@ -112,23 +113,36 @@ package)
     continue
    done
   echo "ingress-nginx deploy is done!";echo
+
+;;
+
+jenkins)
   
+  kubectl create ns jenkins
+  kubectl create secret generic kubeconfig --from-file=/home/bigred/.kube/config -n jenkins
+  kubectl apply -f http://web.flymks.com/cicd/v1/jenkins.yaml
+
+;;
+
+quay)
+
   #quay
-  #kubectl create ns quay
-  #kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
-  #while true
-  # do 
-  #  kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
-  #  [ $? != 0 ] && break || clear
-  #  echo -n "Project Quay deploying"
-  # echo -n ".";sleep 0.5
-  #  echo -n ".";sleep 0.5
-  #  echo -n ".";sleep 0.5
-  #  clear
-  #  continue
-  # done
-  #echo "Project Quay deploy is done!";echo
-  ;;
+  kubectl create ns quay
+  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
+  while true
+   do 
+    kubectl get pods -n $namespace4 | tail -n +2 | cut -b 20-26 | grep -v 'Running' &> /dev/null
+    [ $? != 0 ] && break || clear
+    echo -n "Project Quay deploying"
+    echo -n ".";sleep 0.5
+    echo -n ".";sleep 0.5
+    echo -n ".";sleep 0.5
+    clear
+    continue
+   done
+  echo "Project Quay deploy is done!";echo
+
+;;
 
 landlord)
   
@@ -259,24 +273,32 @@ landlord)
 
 ;;
 
-jenkins)
-
-  kubectl apply -f http://web.flymks.com/cicd/v1/jenkins.yaml
-
-;;
-
 unpackage)
 
-  #quay
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
   #ingress-nginx
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/ingress-deploy.yaml
   #metallb-system
-  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl delete -f -
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
   #local-path-storage
   kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/local-path-storage.yaml
+
+;;
+
+unjenkins)
+  
+  kubectl delete -f http://web.flymks.com/cicd/v1/jenkins.yaml
+  kubectl delete ns jenkins
+  kubectl delete secret generic kubeconfig --from-file=/home/bigred/.kube/config -n jenkins
+
+;;
+
+unquay)
+
+  #quay
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/quay.yaml
+  kubectl delete ns quay
 
 ;;
 
@@ -369,14 +391,19 @@ send)
   echo "createMaster: Deploy kubernetes master node."
   echo "createWorker: Deploy kubernetes worker node."
   echo "package: Download images & deploy basic service pods."
-  echo "landlord: Download images & deploy landlord service pods."
   echo "jenkins: Download images & deploy jenkins service."
+  echo "quay: Download images & deploy quay service."
+  echo "landlord: Download images & deploy landlord service pods."; echo
+
   echo "unpackage: Delete basic service pods"
-  echo "unlandlord: Delete landlord service pods"
+  echo "unjenkins: Delete jenkins service."
+  echo "unquay: Delete quay service."
+  echo "unlandlord: Delete landlord service pods"; echo
+
   echo "delete: Remove all kubernetes file & packages."
   echo "images: Check cluster images."
   echo "rmi: Remove all unuse images on cluster."
-  echo "send: save >> scp >> load target image to worker node [ send <image name> <name.tar> ]";echo
+  echo "send: save >> scp >> load target image to worker node [ send <image name> <name.tar> ]"; echo
 
 ;;
 
