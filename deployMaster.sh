@@ -18,6 +18,7 @@ namespace6="gf"
 
 #Program
 case $1 in
+
 createMaster)
 
   for mlist in $m_nodes;
@@ -67,7 +68,6 @@ package)
 
   #local-path-storage
   wget -O - https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.22/deploy/local-path-storage.yaml
-
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/local-path-storage.yaml
   while true
    do 
@@ -84,8 +84,8 @@ package)
 
   #metallb-system
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
+  kubectl delete -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
   curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl apply -f -
-  kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml
   while true
    do  
     kubectl get pods -n $namespace2 | tail -n +2 | cut -b 39-45 | grep -v 'Running' &> /dev/null
