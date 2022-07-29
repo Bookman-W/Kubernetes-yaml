@@ -85,9 +85,7 @@ package)
   #metallb-system
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-namespace.yaml
   kubectl apply -f https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb.yaml
-  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | kubectl apply -f -
-  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/${1}/g" | sed "s/END/${2}/g"
-  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/111/g" | sed "s/END/222/g"
+  curl -s https://raw.githubusercontent.com/Happylasky/Kubernetes-deploy/main/metallb-ConfigMap.yaml | sed "s/NETID/${NETID}/g" | sed "s/START/${1}/g" | sed "s/END/${2}/g" | kubectl apply -f -
   while true
    do  
     kubectl get pods -n $namespace2 | tail -n +2 | cut -b 39-45 | grep -v 'Running' &> /dev/null
