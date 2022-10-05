@@ -207,7 +207,7 @@ spec:
       value: -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Taipei
         -Xmx$(LIMITS_MEMORY)m -XshowSettings:vm -Dhudson.slaves.NodeProvisioner.initialDelay=0
         -Dhudson.slaves.NodeProvisioner.MARGIN=50 -Dhudson.slaves.NodeProvisioner.MARGIN0=0.85
-    image: quay.io/grassknot/jenkins:jcasc
+    image: <image-name>
     imagePullPolicy: Always
     name: jenkins
     ports:
