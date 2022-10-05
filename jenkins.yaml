@@ -1,0 +1,238 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: jenkins
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: jenkins
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: jenkins
+subjects:
+- kind: ServiceAccount
+  name: jenkins
+  namespace: jenkins
+---
+apiVersion: v1
+data:
+  credentials.yaml: |
+    Y3JlZGVudGlhbHM6CiAgc3lzdGVtOgogICAgZG9tYWluQ3JlZGVudGlhbHM6CiAgICAgIC
+    0gY3JlZGVudGlhbHM6CgogICAgICAgICAgLSBiYXNpY1NTSFVzZXJQcml2YXRlS2V5Ogog
+    ICAgICAgICAgICAgIGlkOiAic3NoLXByaXZhdGUta2V5LWlkIgogICAgICAgICAgICAgIH
+    VzZXJuYW1lOiAic3NoLXByaXZhdGUta2V5IgogICAgICAgICAgICAgIGRlc2NyaXB0aW9u
+    OiAic3NoIHByaXZhdGUga2V5IgogICAgICAgICAgICAgIHNjb3BlOiBHTE9CQUwKICAgIC
+    AgICAgICAgICBwcml2YXRlS2V5U291cmNlOgogICAgICAgICAgICAgICAgZGlyZWN0RW50
+    cnk6CiAgICAgICAgICAgICAgICAgIHByaXZhdGVLZXk6ICIke3JlYWRGaWxlOi92YXIvam
+    Vua2luc19ob21lLy5zc2gvc3NoX2hvc3RfcnNhX2tleX0iCg==
+  jenkins.yaml: |
+    dW5jbGFzc2lmaWVkOgogIGxvY2F0aW9uOgogICAgdXJsOiAiJHtKRU5LSU5TX1VSTDotaH
+    R0cDovL2plbmtpbnMuazhzLm9yZy99IgogIGdpdGVhU2VydmVyczoKICAgIHNlcnZlcnM6
+    CiAgICAgIC0gY3JlZGVudGlhbHNJZDogImdpdGVhLWFkbWluLWlkIgogICAgICAgIGRpc3
+    BsYXlOYW1lOiAiZ2l0ZWEiCiAgICAgICAgbWFuYWdlSG9va3M6IHRydWUKICAgICAgICBz
+    ZXJ2ZXJVcmw6ICJodHRwOi8vZ2l0ZWEuZ2l0ZWE6MzAwMC8iCmplbmtpbnM6CiAgZGlzYW
+    JsZWRBZG1pbmlzdHJhdGl2ZU1vbml0b3JzOgogICAgLSAiamVua2lucy5zZWN1cml0eS5R
+    dWV1ZUl0ZW1BdXRoZW50aWNhdG9yTW9uaXRvciIKICAgIC0gImplbmtpbnMuZGlhZ25vc3
+    RpY3MuQ29udHJvbGxlckV4ZWN1dG9yc0FnZW50cyIKICBjbG91ZHM6CiAgICAtIGt1YmVy
+    bmV0ZXM6CiAgICAgICAgbmFtZTogImt1YmVybmV0ZXMiCiAgICAgICAgbmFtZXNwYWNlOi
+    AiamVua2lucyIKICAgICAgICBqZW5raW5zVXJsOiAiaHR0cDovL2plbmtpbnMiCiAgbGFi
+    ZWxTdHJpbmc6ICJtYXN0ZXIiCiAgc2VjdXJpdHlSZWFsbToKICAgIGxvY2FsOgogICAgIC
+    BhbGxvd3NTaWdudXA6IGZhbHNlCiAgICAgIHVzZXJzOgogICAgICAgIC0gaWQ6ICIke0pF
+    TktJTlNfQURNSU5fSUQ6LWplbmtpbnN9IgogICAgICAgICAgcGFzc3dvcmQ6ICIke0pFTk
+    tJTlNfQURNSU5fUFc6LUplbmtpbnMxMjM0NX0iCiAgYXV0aG9yaXphdGlvblN0cmF0ZWd5
+    OgogICAgZ2xvYmFsTWF0cml4OgogICAgICBwZXJtaXNzaW9uczoKICAgICAgICAtICJVU0
+    VSOk92ZXJhbGwvQWRtaW5pc3Rlcjoke0pFTktJTlNfQURNSU5fSUQ6LWplbmtpbnN9Igog
+    ICAgICAgIC0gIkdST1VQOk92ZXJhbGwvUmVhZDphdXRoZW50aWNhdGVkIgogIHJlbW90aW
+    5nU2VjdXJpdHk6CiAgICBlbmFibGVkOiB0cnVlCnNlY3VyaXR5OgogIGdpdEhvc3RLZXlW
+    ZXJpZmljYXRpb25Db25maWd1cmF0aW9uOgogICAgc3NoSG9zdEtleVZlcmlmaWNhdGlvbl
+    N0cmF0ZWd5OiAibm9Ib3N0S2V5VmVyaWZpY2F0aW9uU3RyYXRlZ3kiCiAgcXVldWVJdGVt
+    QXV0aGVudGljYXRvcjoKICAgIGF1dGhlbnRpY2F0b3JzOgogICAgICAtIGdsb2JhbDoKIC
+    AgICAgICAgIHN0cmF0ZWd5OiB0cmlnZ2VyaW5nVXNlcnNBdXRob3JpemF0aW9uU3RyYXRl
+    Z3kK
+  jobs.yaml: |
+    am9iczoKICAtIHNjcmlwdDogPgogICAgICBwaXBlbGluZUpvYignZmlyc3Qtam9iJykgew
+    ogICAgICAgIGRlZmluaXRpb24gewogICAgICAgICAgY3BzIHsKICAgICAgICAgICAgc2Fu
+    ZGJveCgpCiAgICAgICAgICAgIHNjcmlwdCgiIiJcCiAgICAgICAgICAgICAgcGlwZWxpbm
+    UgewogICAgICAgICAgICAgICAgYWdlbnQgeyBsYWJlbCAnbWFzdGVyJyB9CiAgICAgICAg
+    ICAgICAgICBzdGFnZXMgewogICAgICAgICAgICAgICAgICBzdGFnZSAoJ2VjaG8nKSB7Ci
+    AgICAgICAgICAgICAgICAgICAgc3RlcHMgewogICAgICAgICAgICAgICAgICAgICAgZWNo
+    byAiSGVsbG8hIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgfQ
+    ogICAgICAgICAgICAgICAgICBzdGFnZSAoJ3NoZWxsJykgewogICAgICAgICAgICAgICAg
+    ICAgIHN0ZXBzIHsKICAgICAgICAgICAgICAgICAgICAgIHNoICdjYXQgL2V0Yy9vcy1yZW
+    xlYXNlJwogICAgICAgICAgICAgICAgICAgICAgc2ggJ2hvc3RuYW1lJwogICAgICAgICAg
+    ICAgICAgICAgICAgc2ggJ2hvc3RuYW1lIC1pJwogICAgICAgICAgICAgICAgICAgICAgc2
+    ggJ3dob2FtaScKICAgICAgICAgICAgICAgICAgICAgIHNoICdwd2QnCiAgICAgICAgICAg
+    ICAgICAgICAgICBzaCAnbHMgLWFsJwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgIC
+    AgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgIH0iIiIuc3Ry
+    aXBJbmRlbnQoKSkKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0K
+kind: Secret
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins-casc
+  namespace: jenkins
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: jenkins
+spec:
+  ports:
+  - name: jenkins-http
+    port: 80
+    targetPort: 8080
+  - name: jenkins-agent
+    port: 50000
+    protocol: TCP
+    targetPort: 50000
+  selector:
+    app: jenkins
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: local-path
+  volumeMode: Filesystem
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: jenkins
+spec:
+  ingressClassName: ig1
+  rules:
+  - host: jenkins.k8s.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: jenkins
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: jenkins
+spec:
+  containers:
+  - env:
+    - name: LIMITS_MEMORY
+      valueFrom:
+        resourceFieldRef:
+          divisor: 1Mi
+          resource: limits.memory
+    - name: JAVA_OPTS
+      value: -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Taipei
+        -Xmx$(LIMITS_MEMORY)m -XshowSettings:vm -Dhudson.slaves.NodeProvisioner.initialDelay=0
+        -Dhudson.slaves.NodeProvisioner.MARGIN=50 -Dhudson.slaves.NodeProvisioner.MARGIN0=0.85
+    image: quay.io/grassknot/jenkins:jcasc
+    imagePullPolicy: Always
+    name: jenkins
+    ports:
+    - containerPort: 8080
+    - containerPort: 50000
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 0.5
+        memory: 500Mi
+    volumeMounts:
+    - mountPath: /usr/jenkins_config/
+      name: jenkins-config
+    - mountPath: /var/jenkins_home
+      name: jenkins-storage
+  securityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+  serviceAccountName: jenkins
+  volumes:
+  - name: jenkins-storage
+    persistentVolumeClaim:
+      claimName: jenkins-pvc
+  - name: jenkins-config
+    secret:
+      secretName: jenkins-casc
