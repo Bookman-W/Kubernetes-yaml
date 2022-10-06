@@ -122,7 +122,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: local-path
+  storageClassName: <storageclass>
   volumeMode: Filesystem
 ---
 apiVersion: v1
@@ -136,7 +136,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: local-path
+  storageClassName: <storageclass>
   volumeMode: Filesystem
 ---
 apiVersion: batch/v1
