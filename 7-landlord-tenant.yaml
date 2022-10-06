@@ -34,12 +34,12 @@ spec:
             - SYS_CHROOT
             - CAP_NET_RAW
         volumeMounts:
-        - mountPath: /home/workdir
-          name: workdir
+        - mountPath: /home/wk
+          name: wk
       restartPolicy: Always
   volumeClaimTemplates:
   - metadata:
-      name: workdir
+      name: wk
     spec:
       accessModes:
       - ReadWriteOnce
