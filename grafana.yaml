@@ -1266,6 +1266,15 @@ spec:
           name: grafana
         - mountPath: /tmp/grafana/conf
           name: grafana-conf
+      initContainers:
+        - name: init-container
+          image: alpine
+          command: ["/bin/bash"]
+          args: ["-c", "chmod 777 /var/lib/grafana"]
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: "/var/lib/grafana"
+              name: grafana
       restartPolicy: Always
       volumes:
       - name: grafana
