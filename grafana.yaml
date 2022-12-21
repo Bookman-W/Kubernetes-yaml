@@ -1277,7 +1277,7 @@ spec:
       initContainers:
         - name: init-container
           image: alpine
-          command: ["/bin/bash"]
+          command: ["/bin/sh"]
           args: ["-c", "chmod 777 /var/lib/grafana"]
           imagePullPolicy: IfNotPresent
           volumeMounts:
