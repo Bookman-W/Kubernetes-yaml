@@ -1266,6 +1266,14 @@ spec:
           name: grafana
         - mountPath: /tmp/grafana/conf
           name: grafana-conf
+      restartPolicy: Always
+      volumes:
+      - name: grafana
+        persistentVolumeClaim:
+          claimName: grafana
+      - configMap:
+          name: grafana-conf
+        name: grafana-conf
       initContainers:
         - name: init-container
           image: alpine
@@ -1275,14 +1283,6 @@ spec:
           volumeMounts:
             - mountPath: "/var/lib/grafana"
               name: grafana
-      restartPolicy: Always
-      volumes:
-      - name: grafana
-        persistentVolumeClaim:
-          claimName: grafana
-      - configMap:
-          name: grafana-conf
-        name: grafana-conf
 ---
 apiVersion: apps/v1
 kind: Deployment
