@@ -37,6 +37,15 @@ spec:
         - mountPath: /home/workdir
           name: workdir
       restartPolicy: Always
+      initContainers:
+        - name: init-container
+          image: alpine
+          command: ["/bin/sh"]
+          args: ["-c", "chmod 777 /home/workdir"]
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: "/home/workdir"
+              name: workdir
   volumeClaimTemplates:
   - metadata:
       name: workdir
