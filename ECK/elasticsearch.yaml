@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ek-test-es-master-nodes
+spec:
+  ports:
+    - name: https
+      port: 9200
+      targetPort: 9200
+  selector:
+    elasticsearch.k8s.elastic.co/cluster-name: "ek-test"
+    elasticsearch.k8s.elastic.co/node-master: "true"
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ek-test-es-data-nodes
+spec:
+  ports:
+    - name: https
+      port: 9200
+      targetPort: 9200
+  selector:
+    elasticsearch.k8s.elastic.co/cluster-name: "ek-test"
+    elasticsearch.k8s.elastic.co/node-data: "true"
+  type: LoadBalancer
+
+---
+
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: ek-test
+spec:
+  version: 8.2.2
+  auth:
+    fileRealm:
+    - secretName: ek-test-filerealm-secret
+  nodeSets:
+  - name: master
+    count: 3
+    config:
+      node.roles: ["master"]
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 0.5
+            limits:
+              memory: 2Gi
+              cpu: 1
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 16Gi
+        storageClassName: nfs-storage
+  - name: data
+    count: 2
+    config:
+      node.roles: ["data"]
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 0.5
+            limits:
+              memory: 2Gi
+              cpu: 1
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: nfs-storage
