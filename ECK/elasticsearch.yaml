@@ -64,7 +64,7 @@ spec:
         resources:
           requests:
             storage: 16Gi
-        storageClassName: nfs-storage
+        storageClassName: <storageClassName>
   - name: data
     count: 2
     config:
@@ -89,4 +89,4 @@ spec:
         resources:
           requests:
             storage: 100Gi
-        storageClassName: nfs-storage
+        storageClassName: <storageClassName>
