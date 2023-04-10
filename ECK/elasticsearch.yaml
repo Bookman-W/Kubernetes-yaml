@@ -4,7 +4,7 @@ metadata:
   name: ek-test-es-master-nodes
   namespace: elastic-system
   labels:
-    workgroup: hdd
+    type: controller-plane
 spec:
   ports:
     - name: https
@@ -23,7 +23,7 @@ metadata:
   name: ek-test-es-data-nodes
   namespace: elastic-system
   labels:
-    workgroup: hdd
+    type: controller-plane
 spec:
   ports:
     - name: https
@@ -41,10 +41,8 @@ kind: Elasticsearch
 metadata:
   name: ek-test
   namespace: elastic-system
-  labels:
-    workgroup: hdd
 spec:
-  version: 8.2.2
+  version: 8.7.0
   auth:
     fileRealm:
     - secretName: ek-test-filerealm-secret
@@ -55,6 +53,16 @@ spec:
       node.roles: ["master"]
     podTemplate:
       spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: type
+                  operator: In
+                  values:
+                  - controller-plane
+              topologyKey: "kubernetes.io/hostname"
         containers:
         - name: elasticsearch
           resources:
@@ -76,11 +84,21 @@ spec:
             storage: 16Gi
         storageClassName: <storageClassName>
   - name: data
-    count: 2
+    count: 3
     config:
       node.roles: ["data"]
     podTemplate:
       spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: type
+                  operator: In
+                  values:
+                  - worker
+              topologyKey: "kubernetes.io/hostname"
         containers:
         - name: elasticsearch
           resources:

@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kibana
+  name: elasticsearch
   namespace: elastic-system
   annotations:
     kubernetes.io/tls-acme: "true"
@@ -11,22 +11,22 @@ metadata:
 spec:
   defaultBackend:
     service:
-      name: ek-test-kb-http
+      name: elastic-webhook-server
       port:
-        number: 5601
+        number: 443
   ingressClassName: ig1
   rules:
-  - host: kibana.k8s.org
+  - host: es.k8s.org
     http:
       paths:
-      - backend:
-          service:
-            name: ek-test-kb-http
-            port:
-              number: 5601
-        path: /
-        pathType: Prefix
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: elastic-webhook-server
+              port:
+                number: 443
   tls:
     - hosts:
-        - kibana.k8s.org
-      secretName: kibana.k8s.org
+        - es.k8s.org
+      secretName: es.k8s.org
