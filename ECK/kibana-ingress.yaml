@@ -3,30 +3,21 @@ kind: Ingress
 metadata:
   name: kibana
   namespace: elastic-system
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/server-snippet: |
-      proxy_ssl_verify off;
 spec:
+  ingressClassName: ig1
   defaultBackend:
     service:
       name: ek-test-kb-http
       port:
         number: 5601
-  ingressClassName: ig1
   rules:
-  - host: kibana.k8s.org
-    http:
-      paths:
-      - backend:
-          service:
-            name: ek-test-kb-http
-            port:
-              number: 5601
-        path: /
-        pathType: Prefix
-  tls:
-    - hosts:
-        - kibana.k8s.org
-      secretName: kibana.k8s.org
+    - host: kibana.k8s.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ek-test-kb-http
+                port:
+                  number: 5601
