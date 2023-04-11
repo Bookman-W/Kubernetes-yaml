@@ -42,7 +42,7 @@ metadata:
   name: ek-test
   namespace: elastic-system
 spec:
-  version: 8.7.0
+  version: <eck-version>
   auth:
     fileRealm:
     - secretName: ek-test-filerealm-secret
