@@ -5,6 +5,7 @@ metadata:
     app: metallb
   name: controller
 spec:
+  autoAssign: false
   allowPrivilegeEscalation: false
   allowedCapabilities: []
   allowedHostPaths: []
