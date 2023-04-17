@@ -8,5 +8,6 @@ data:
     address-pools:
     - name: mlb1
       protocol: layer2
+      #auto-assign: false
       addresses:
       - NETID.START-NETID.END
