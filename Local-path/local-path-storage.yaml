@@ -62,7 +62,7 @@ spec:
       serviceAccountName: local-path-provisioner-service-account
       containers:
         - name: local-path-provisioner
-          image: quay.io/bookman117/local-path-provisioner:master-head
+          image: quay.io/kubevirt/hostpath-provisioner:<image-version>
           imagePullPolicy: IfNotPresent
           command:
             - local-path-provisioner
