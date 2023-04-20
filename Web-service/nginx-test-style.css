@@ -1,0 +1,54 @@
+/* 重設樣式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* 全局樣式 */
+  body {
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    margin: 0rem;
+    overflow: hidden;
+    font-family: NotoSansTC-Light, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  h1, h2, h3 {
+    font-weight: bolder;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* 網站樣式 */
+  header {
+    background-color: black;
+    color: #fff;
+    padding: 20px;
+  }
+  
+  header h1 {
+    font-size: 100px;
+    margin: 0;
+  }
+
+  header h2 {
+    font-size: 80px;
+    margin: 0;
+  }
+
+  header h3 {
+    font-size: 60px;
+    margin: 0;
+  }
+  
+  nav ul {
+    list-style: none;
+    display: flex;
+  }

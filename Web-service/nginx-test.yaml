@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-test
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nginx-web-host
+  namespace: nginx-test
+  labels:
+    app: nginx-test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: rook-ceph-block
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: nginx-test
+  labels:
+    app: nginx-test
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-test
+  namespace: nginx-test
+spec:
+  selector:
+    matchLabels:
+      app: nginx-test
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx-test
+    spec:
+      securityContext:
+        runAsUser: 0
+        fsGroup: 0
+      containers:
+        - name: nginx-test
+          image: nginx:latest
+          imagePullPolicy: IfNotPresent
+          command:
+          - /bin/sh
+          - -c
+          - curl -s > /usr/share/nginx/html/index.html
+          volumeMounts:
+            - name: nginx-web-host
+              mountPath: /usr/share/nginx/html/
+      volumes:
+        - name: nginx-web-host
+          persistentVolumeClaim:
+            claimName: nginx-web-host
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ek-test-es-master-nodes
+  namespace: elastic-system
+  labels:
+    type: controller-plane
+spec:
+  ports:
+    - name: https
+      port: 9200
+      targetPort: 9200
+  selector:
+    elasticsearch.k8s.elastic.co/cluster-name: "ek-test"
+    elasticsearch.k8s.elastic.co/node-master: "true"
+  type: LoadBalancer
