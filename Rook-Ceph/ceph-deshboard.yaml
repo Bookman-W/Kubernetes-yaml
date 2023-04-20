@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: ig1
   rules:
-  - host: ceph.vattenlab.com
+  - host: <URL>
     http:
       paths:
       - backend:
@@ -23,5 +23,5 @@ spec:
         pathType: Prefix
   tls:
     - hosts:
-        - ceph.vattenlab.com
-      secretName: ceph.vattenlab.com
+        - <URL>
+      secretName: <URL>
