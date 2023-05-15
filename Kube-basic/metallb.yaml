@@ -1,4 +1,4 @@
-apiVersion: policy/v1beta1
+apiVersion: v1
 kind: PodSecurityPolicy
 metadata:
   labels:
@@ -39,7 +39,7 @@ spec:
   - secret
   - emptyDir
 ---
-apiVersion: policy/v1beta1
+apiVersion: v1
 kind: PodSecurityPolicy
 metadata:
   labels:
