@@ -23,7 +23,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: nginx-test
+  name: nginx-test-svc
   namespace: nginx-test
   labels:
     app: nginx-test
@@ -35,6 +35,29 @@ spec:
     protocol: TCP
     targetPort: 80
   type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-test-ingress
+  namespace: nginx-test
+spec:
+  ingressClassName: ig1
+  rules:
+  - host: vatten.nginx.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx-test-svc
+            port:
+              name: nginx-test
+        path: /
+        pathType: Prefix
+  tls:
+    - hosts:
+        - vatten.nginx.com
+      secretName: vatten.nginx.com
 ---
 apiVersion: apps/v1
 kind: Deployment
