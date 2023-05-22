@@ -54,10 +54,6 @@ spec:
               name: nginx-test
         path: /
         pathType: Prefix
-  tls:
-    - hosts:
-        - vatten.nginx.com
-      secretName: vatten.nginx.com
 ---
 apiVersion: apps/v1
 kind: Deployment
