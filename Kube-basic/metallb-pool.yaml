@@ -2,7 +2,7 @@ apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
   namespace: metallb-system
-  name: mp-1
+  name: <pool-name>
 spec:
   addresses:
-  - 192.168.9.1-192.168.9.5
+  - <NETID>.<START>-<NETID>.<END>
