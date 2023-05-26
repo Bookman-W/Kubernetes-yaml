@@ -1,8 +1,12 @@
-apiVersion: metallb.io/v1beta1
-kind: IPAddressPool
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: metallb-pool-1
   namespace: metallb-system
-spec:
-  addresses:
-  - <NETID>.<START>-<NETID>.<END>
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - <start-ip>-<end-ip>

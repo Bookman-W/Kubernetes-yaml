@@ -85,8 +85,7 @@ spec:
           command:
           - /bin/sh
           - -c
-          - curl -s https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Web-service/nginx-test-index.html > /usr/share/nginx/html/index.html;
-          - curl -s https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Web-service/nginx-test-style.css > /usr/share/nginx/html/style.css
+          - curl -s https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Web-service/nginx-test-index.html > /usr/share/nginx/html/index.html && curl -s https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Web-service/nginx-test-style.css > /usr/share/nginx/html/style.css
           volumeMounts:
             - name: nginx-web-host
               mountPath: /usr/share/nginx/html/
