@@ -579,7 +579,7 @@ metadata:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
     app.kubernetes.io/version: 1.2.0
-  name: ig1
+  name: <ingress-name>
 spec:
   controller: k8s.io/ingress-nginx
 ---
