@@ -20,41 +20,6 @@ spec:
       storage: 1Gi
   storageClassName: rook-ceph-block
 ---
-kind: Service
-apiVersion: v1
-metadata:
-  name: nginx-test-svc
-  namespace: nginx-test
-  labels:
-    app: nginx-test
-spec:
-  selector:
-    app: nginx-test
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 80
-  type: LoadBalancer
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nginx-test-ingress
-  namespace: nginx-test
-spec:
-  ingressClassName: ig1
-  rules:
-  - host: vatten.nginx.com
-    http:
-      paths:
-      - backend:
-          service:
-            name: nginx-test-svc
-            port:
-              name: nginx-test
-        path: /
-        pathType: Prefix
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -82,10 +47,6 @@ spec:
           ports:
           - containerPort: 80
             protocol: TCP
-          command:
-          - /bin/sh
-          - -c
-          - curl -s https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Web-service/nginx-test-index.html > /usr/share/nginx/html/index.html && curl -s https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Web-service/nginx-test-style.css > /usr/share/nginx/html/style.css
           volumeMounts:
             - name: nginx-web-host
               mountPath: /usr/share/nginx/html/
@@ -93,3 +54,38 @@ spec:
         - name: nginx-web-host
           persistentVolumeClaim:
             claimName: nginx-web-host
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-test-svc
+  namespace: nginx-test
+  labels:
+    app: nginx-test
+spec:
+  selector:
+    app: nginx-test
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-test-ingress
+  namespace: nginx-test
+spec:
+  ingressClassName: ingress-1
+  rules:
+  - host: vatten.nginx.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-test-svc
+            port:
+              number: 80
