@@ -52,3 +52,36 @@
     list-style: none;
     display: flex;
   }
+
+  /* 文字水平置中 */
+  .text-h-center {
+    text-align: center;
+  }
+
+  /* 文字垂直置中 */
+  .text-v-center {
+    vertical-align: top;
+  }
+  .text-v-center:before {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 100%;
+    vertical-align: middle;
+  }
+  .text-v-center p {
+    display: inline-block;
+  }
+
+  /* 好看用 */
+  body {
+    margin: 0;
+    padding: 10px;
+  }
+  .section {
+    display: inline-block;
+    height: 200px;
+    margin: 0;
+    width: 32%;
+    border: 1px solid #000;
+  }
