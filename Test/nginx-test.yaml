@@ -40,6 +40,10 @@ spec:
       securityContext:
         runAsUser: 0
         fsGroup: 0
+      volumes:
+        - name: nginx-web-host
+          persistentVolumeClaim:
+            claimName: nginx-web-host
       containers:
         - name: nginx-test
           image: nginx:latest
@@ -50,10 +54,6 @@ spec:
           volumeMounts:
             - name: nginx-web-host
               mountPath: /usr/share/nginx/html/
-      volumes:
-        - name: nginx-web-host
-          persistentVolumeClaim:
-            claimName: nginx-web-host
 ---
 kind: Service
 apiVersion: v1
@@ -66,7 +66,8 @@ spec:
   selector:
     app: nginx-test
   ports:
-  - port: 80
+  - name: http-nginx
+    port: 80
     protocol: TCP
     targetPort: 80
   type: LoadBalancer
@@ -82,10 +83,10 @@ spec:
   - host: vatten.nginx.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: nginx-test-svc
             port:
-              number: 80
+              name: http-nginx
+        path: /
+        pathType: Prefix
