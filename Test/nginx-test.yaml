@@ -5,8 +5,8 @@ metadata:
   labels:
     app: nginx-test
 ---
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: nginx-web-host
   namespace: nginx-test
@@ -48,12 +48,54 @@ spec:
         - name: nginx-test
           image: nginx:latest
           imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 10m
+              memory: 80Mi
+            requests:
+              cpu: 10m
+              memory: 80Mi
           ports:
           - containerPort: 80
             protocol: TCP
           volumeMounts:
             - name: nginx-web-host
               mountPath: /usr/share/nginx/html/
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nginx-prepare
+  namespace: nginx-test
+spec:
+  template:
+    spec:
+      volumes:
+        - name: nginx-web-host
+          persistentVolumeClaim:
+            claimName: nginx-web-host
+      containers:
+      - name: curl
+        image: nginx:latest
+        args:
+          - /bin/bash
+          - -c
+          - >
+            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/index.html > /usr/share/nginx/html/index.html;
+            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/style.css > /usr/share/nginx/html/style.css
+        volumeMounts:
+            - name: nginx-web-host
+              mountPath: /usr/share/nginx/html/
+        resources:
+            limits:
+              cpu: 10m
+              memory: 80Mi
+            requests:
+              cpu: 10m
+              memory: 80Mi
+      restartPolicy: OnFailure
+  backoffLimit: 6
+
 ---
 kind: Service
 apiVersion: v1
