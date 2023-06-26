@@ -14,7 +14,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 750px; /* 調整容器的高度 */
+  height: 800px; /* 調整容器的高度 */
   color: #326ce5;
 }
 
