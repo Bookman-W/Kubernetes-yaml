@@ -3,18 +3,19 @@ body {
   height: 100vh;
   width: 100vw;
   margin: 0rem;
-  background-color: lightblue;
-  font-family: NotoSansTC-Light, Arial, sans-serif;
+  display: flex;
+  place-items: center;
   overflow: hidden;
+  font-family: NotoSansTC-Light, Arial, sans-serif;
+  background-color: lightblue;
 }
 
 .container {
   text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  height: 800px; /* 調整容器的高度 */
+  align-items: center;
   color: #326ce5;
 }
 
