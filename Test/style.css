@@ -21,6 +21,11 @@
     font-weight: bolder;
   }
   
+  /* 文字水平置中 */
+  .centered-text {
+    text-align: center;
+  }
+
   img {
     max-width: 100%;
     height: auto;
@@ -51,11 +56,6 @@
   nav ul {
     list-style: none;
     display: flex;
-  }
-
-  /* 文字水平置中 */
-  .text-h-center {
-    text-align: center;
   }
 
   /* 文字垂直置中 */
