@@ -3,7 +3,8 @@ body {
   margin: 0rem;
   display: grid;
   place-items: center;
-  background-color: lightblue;
+  /* background-color: lightblue; */
+  background-color: black;
   font-family: NotoSansTC-Light, Arial, sans-serif;
   overflow: hidden;
 }
@@ -21,7 +22,7 @@ body {
 .container p {
   font-size: 15px;
   line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
-  color: black;
+  color: white;
 }
 
 .container h1 {
@@ -38,7 +39,7 @@ body {
 .container h3 {
   font-size: 24px;
   line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
-  color: black;
+  color: white;
 }
 
 .image-with-text {
