@@ -16,7 +16,6 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #326ce5;
 }
 
 .container p {
@@ -27,17 +26,18 @@ body {
 
 .container h1 {
   font-size: 40px;
-  line-height: 0; /* 調整行高，控制文字之間的間距 */
+  line-height: 0.1; /* 調整行高，控制文字之間的間距 */
+  color: #326ce5;
 }
 
 .container h2 {
-  font-size: 36px;
-  line-height: 0; /* 調整行高，控制文字之間的間距 */
+  font-size: 32px;
+  line-height: 0.1; /* 調整行高，控制文字之間的間距 */
 }
 
 .container h3 {
-  font-size: 32px;
-  line-height: 0; /* 調整行高，控制文字之間的間距 */
+  font-size: 24px;
+  line-height: 0.1; /* 調整行高，控制文字之間的間距 */
 }
 
 .image-with-text {
