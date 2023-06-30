@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/server-snippet: |
       proxy_ssl_verify off;
 spec:
-  ingressClassName: <INGRESSCLASS>
+  ingressClassName: <ingressClass>
   rules:
   - host: <URL>
     http:
