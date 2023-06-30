@@ -19,9 +19,9 @@ body {
 }
 
 .container p {
-  font-size: 16px;
-  line-height: 0.1; /* 調整行高，控制文字之間的間距 */
-  color: gray;
+  font-size: 15px;
+  line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
+  color: black;
 }
 
 .container h1 {
@@ -37,7 +37,8 @@ body {
 
 .container h3 {
   font-size: 24px;
-  line-height: 0.1; /* 調整行高，控制文字之間的間距 */
+  line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
+  color: black;
 }
 
 .image-with-text {
