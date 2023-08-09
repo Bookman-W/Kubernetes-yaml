@@ -8,10 +8,10 @@ metadata:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nginx-web-host
-  namespace: test-nginx
+  name: apache-web-host
+  namespace: test-apache
   labels:
-    app: test-nginx
+    app: test-apache
 spec:
   accessModes:
     - ReadWriteOnce
@@ -84,7 +84,7 @@ spec:
             curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/apache_index.html > /var/www/html/apache_index.html;
             curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/apache_style.css > /var/www/html/apache_style.css.
         volumeMounts:
-            - name: nginx-web-host
+            - name: apache-web-host
               mountPath: /var/www/html/
         resources:
             limits:
