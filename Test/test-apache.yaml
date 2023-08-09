@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: test-nginx
+  name: test-apache
   labels:
-    app: test-nginx
+    app: test-apache
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,30 +23,30 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-nginx
-  namespace: test-nginx
+  name: test-apache
+  namespace: test-apache
   labels:
-    app: test-nginx
+    app: test-apache
 spec:
   selector:
     matchLabels:
-      app: test-nginx
+      app: test-apache
   replicas: 1 # tells deployment to run 2 pods matching the template
   template:
     metadata:
       labels:
-        app: test-nginx
+        app: test-apache
     spec:
       securityContext:
         runAsUser: 0
         fsGroup: 0
       volumes:
-        - name: nginx-web-host
+        - name: apache-web-host
           persistentVolumeClaim:
-            claimName: nginx-web-host
+            claimName: apache-web-host
       containers:
-        - name: test-nginx
-          image: nginx:latest
+        - name: test-apache
+          image: httpd:latest
           imagePullPolicy: IfNotPresent
           resources:
             limits:
@@ -59,33 +59,33 @@ spec:
           - containerPort: 80
             protocol: TCP
           volumeMounts:
-            - name: nginx-web-host
-              mountPath: /usr/share/nginx/html/
+            - name: apache-web-host
+              mountPath: /var/www/html/
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: nginx-prepare
-  namespace: test-nginx
+  name: apache-prepare
+  namespace: test-apache
 spec:
   template:
     spec:
       volumes:
-        - name: nginx-web-host
+        - name: apache-web-host
           persistentVolumeClaim:
-            claimName: nginx-web-host
+            claimName: apache-web-host
       containers:
       - name: curl
-        image: nginx:latest
+        image: httpd:latest
         args:
           - /bin/bash
           - -c
           - >
-            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/nginx_index.html > /usr/share/nginx/html/nginx_index.html;
-            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/nginx_style.css > /usr/share/nginx/html/nginx_style.css
+            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/apache_index.html > /var/www/html/apache_index.html;
+            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/apache_style.css > /var/www/html/apache_style.css.
         volumeMounts:
             - name: nginx-web-host
-              mountPath: /usr/share/nginx/html/
+              mountPath: /var/www/html/
         resources:
             limits:
               cpu: 10m
@@ -99,15 +99,15 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: test-nginx-svc
-  namespace: test-nginx
+  name: test-apache-svc
+  namespace: test-apache
   labels:
-    app: test-nginx
+    app: test-apache
 spec:
   selector:
-    app: test-nginx
+    app: test-apache
   ports:
-  - name: http-nginx
+  - name: http-apache
     port: 80
     protocol: TCP
     targetPort: 80
@@ -116,18 +116,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: test-nginx-ingress
-  namespace: test-nginx
+  name: test-apache-ingress
+  namespace: test-apache
 spec:
   ingressClassName: <ingressClass>
   rules:
-  - host: vatten.nginx.com
+  - host: vatten.apache.com
     http:
       paths:
       - backend:
           service:
-            name: test-nginx-svc
+            name: test-apache-svc
             port:
-              name: http-nginx
+              name: http-apache
         path: /
         pathType: Prefix
