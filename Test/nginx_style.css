@@ -8,7 +8,6 @@ body {
   font-family: NotoSansTC-Light, Arial, sans-serif;
   overflow: hidden;
 }
-
 .container {
   height: 100vh;
   width: 100vw;
@@ -18,7 +17,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-
 .container p {
   font-size: 15px;
   line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
@@ -30,40 +28,33 @@ body {
   line-height: 0.1; /* 調整行高，控制文字之間的間距 */
   color: #326ce5;
 }
-
 .container h2 {
   font-size: 32px;
   line-height: 0.1; /* 調整行高，控制文字之間的間距 */
 }
-
 .container h3 {
   font-size: 24px;
   line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
   color: white;
 }
-
 .image-with-text {
   margin-top: 100px;
   margin-bottom: 100px;
 }
-
 @keyframes gradient-animation {
   100% { opacity: 0.5; }
   50% { opacity: 1; }
   0% { opacity: 0.5; }
 }
-
 .gradient-text {
   animation: gradient-animation 5s linear infinite;
 }
-
 .breath-effect {
   width: 200px;
   height: 200px;
   transform-origin: center;
   animation: breathe 5s ease-in-out infinite;
 }
-
 @keyframes breathe {
   0% { transform: scale(1.08); }
   50% { transform: scale(1); }

@@ -20,6 +20,97 @@ spec:
       storage: 100Mi
   storageClassName: <storageClassName>
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content
+  namespace: test-nginx
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>Kubernetes</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="breath-effect">
+                <div class="gradient-text">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" alt="Kubernetes_logo" width="200" height="200">
+                </div>
+            </div>
+            <p></p>
+            <h1>Welcome to Kubernetes</h1>
+            <h3>Clusters are externally accessible</h3>
+            <p>Load balancer & Ingress controller have passed the test</p>
+        </div>
+    </body>
+    </html>
+  style.css: |
+    /* 全局樣式 */
+    body {
+      margin: 0rem;
+      display: grid;
+      place-items: center;
+      /* background-color: lightblue; */
+      background-color: black;
+      font-family: NotoSansTC-Light, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .container {
+      height: 100vh;
+      width: 100vw;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .container p {
+      font-size: 15px;
+      line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
+      color: white;
+    }
+    .container h1 {
+      font-size: 40px;
+      line-height: 0.1; /* 調整行高，控制文字之間的間距 */
+      color: #326ce5;
+    }
+    .container h2 {
+      font-size: 32px;
+      line-height: 0.1; /* 調整行高，控制文字之間的間距 */
+    }
+    .container h3 {
+      font-size: 24px;
+      line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
+      color: white;
+    }
+    .image-with-text {
+      margin-top: 100px;
+      margin-bottom: 100px;
+    }
+    @keyframes gradient-animation {
+      100% { opacity: 0.5; }
+      50% { opacity: 1; }
+      0% { opacity: 0.5; }
+    }
+    .gradient-text {
+      animation: gradient-animation 5s linear infinite;
+    }
+    .breath-effect {
+      width: 200px;
+      height: 200px;
+      transform-origin: center;
+      animation: breathe 5s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0% { transform: scale(1.08); }
+      50% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,6 +135,9 @@ spec:
         - name: nginx-web-host
           persistentVolumeClaim:
             claimName: nginx-web-host
+        - name: config-volume
+          configMap:
+            name: web-content
       containers:
         - name: test-nginx
           image: nginx:latest
@@ -60,41 +154,9 @@ spec:
             protocol: TCP
           volumeMounts:
             - name: nginx-web-host
+              mountPath: /usr/share/nginx/buffer/
+            - name: config-volume
               mountPath: /usr/share/nginx/html/
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: nginx-prepare
-  namespace: test-nginx
-spec:
-  template:
-    spec:
-      volumes:
-        - name: nginx-web-host
-          persistentVolumeClaim:
-            claimName: nginx-web-host
-      containers:
-      - name: curl
-        image: nginx:latest
-        args:
-          - /bin/bash
-          - -c
-          - >
-            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/nginx_index.html > /usr/share/nginx/html/index.html;
-            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/nginx_style.css > /usr/share/nginx/html/style.css
-        volumeMounts:
-            - name: nginx-web-host
-              mountPath: /usr/share/nginx/html/
-        resources:
-            limits:
-              cpu: 10m
-              memory: 80Mi
-            requests:
-              cpu: 10m
-              memory: 80Mi
-      restartPolicy: OnFailure
-  backoffLimit: 6
 ---
 kind: Service
 apiVersion: v1

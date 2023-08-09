@@ -20,6 +20,97 @@ spec:
       storage: 100Mi
   storageClassName: <storageClassName>
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content
+  namespace: test-apache
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>Apache</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="breath-effect">
+                <div class="gradient-text">
+                    <img src="https://d3g9o9u8re44ak.cloudfront.net/logo/26c78277-ae72-442e-ad4f-f6fb06265887/c54b4d4c-a6b6-4ff3-8a82-0b01fd94bb4b.png" alt="Apache_logo" width="200" height="200">
+                </div>
+            </div>
+            <p></p>
+            <h1>Welcome to Apache</h1>
+            <h3>Website is externally accessible</h3>
+        </div>
+    </body>
+    </html>
+  style.css: |
+    /* 全局樣式 */
+    body {
+      margin: 0rem;
+      display: grid;
+      place-items: center;
+      /* background-color: lightblue; */
+      background-color: #fafafa;
+      font-family: NotoSansTC-Light, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .container {
+      height: 100vh;
+      width: 100vw;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .container p {
+      font-size: 15px;
+      line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
+      color: black;
+    }
+    .container h1 {
+      font-size: 40px;
+      line-height: 0.1; /* 調整行高，控制文字之間的間距 */
+      color: #cb5605;
+    }
+    .container h2 {
+      font-size: 32px;
+      line-height: 0.1; /* 調整行高，控制文字之間的間距 */
+      color: black;
+    }
+    .container h3 {
+      font-size: 24px;
+      line-height: 0.1em; /* 調整行高，控制文字之間的間距 */
+      color: black;
+    }
+    .image-with-text {
+      margin-top: 100px;
+      margin-bottom: 100px;
+    }
+    @keyframes gradient-animation {
+      100% { opacity: 0.5; }
+      50% { opacity: 1; }
+      0% { opacity: 0.5; }
+    }
+    .gradient-text {
+      animation: gradient-animation 5s linear infinite;
+    }
+    .breath-effect {
+      width: 200px;
+      height: 200px;
+      transform-origin: center;
+      animation: breathe 5s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0% { transform: scale(1.08); }
+      50% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,6 +135,9 @@ spec:
         - name: apache-web-host
           persistentVolumeClaim:
             claimName: apache-web-host
+        - name: config-volume
+          configMap:
+            name: web-content
       containers:
         - name: test-apache
           image: httpd:latest
@@ -60,41 +154,9 @@ spec:
             protocol: TCP
           volumeMounts:
             - name: apache-web-host
-              mountPath: /var/www/html/
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: apache-prepare
-  namespace: test-apache
-spec:
-  template:
-    spec:
-      volumes:
-        - name: apache-web-host
-          persistentVolumeClaim:
-            claimName: apache-web-host
-      containers:
-      - name: curl
-        image: httpd:latest
-        args:
-          - /bin/bash
-          - -c
-          - >
-            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/apache_index.html > /var/www/html/index.html;
-            curl https://raw.githubusercontent.com/Bookman-W/Kubernetes-yaml/main/Test/apache_style.css > /var/www/html/style.css
-        volumeMounts:
-            - name: apache-web-host
-              mountPath: /var/www/html/
-        resources:
-            limits:
-              cpu: 10m
-              memory: 80Mi
-            requests:
-              cpu: 10m
-              memory: 80Mi
-      restartPolicy: OnFailure
-  backoffLimit: 6
+              mountPath: /var/www/buffer/
+            - name: config-volume
+              mountPath: /usr/local/apache2/htdocs
 ---
 kind: Service
 apiVersion: v1
