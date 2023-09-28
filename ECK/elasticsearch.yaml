@@ -48,7 +48,7 @@ spec:
     - secretName: ek-test-filerealm-secret
   nodeSets:
   - name: master
-    count: 3
+    count: <ECK_MASTER_NODE_COUNT>
     config:
       node.roles: ["master"]
     podTemplate:
@@ -84,7 +84,7 @@ spec:
             storage: 16Gi
         storageClassName: <storageClassName>
   - name: data
-    count: 3
+    count: <ECK_DATA_NODES_COUNT>
     config:
       node.roles: ["data"]
     podTemplate:
